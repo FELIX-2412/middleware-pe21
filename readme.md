@@ -51,3 +51,43 @@ Salida obtenida:
 Código HTTP:
 
 404 Not Found
+
+## Testing
+
+Para esta actividad se implementaron pruebas unitarias utilizando Jest y ts-jest con el objetivo de validar el correcto funcionamiento de los middlewares desarrollados en el proyecto, sin necesidad de ejecutar el servidor.
+
+### Comando de ejecución
+
+```bash
+npm test
+```
+
+### Resultado obtenido
+
+```bash
+PASS src/middlewares/auth.test.ts
+PASS src/middlewares/logger.test.ts
+
+Test Suites: 2 passed, 2 total
+Tests: 5 passed, 5 total
+Snapshots: 0 total
+Time: 0.343 s
+Ran all test suites.
+```
+
+### Casos probados
+
+#### Middleware requireApiKey
+
+* Validación cuando el encabezado `x-api-key` no existe.
+* Validación cuando la API key es incorrecta.
+* Validación cuando la API key es válida y permite continuar la ejecución mediante `next()`.
+
+#### Middleware requestLogger
+
+* Verificación de que el middleware invoque correctamente la función `next()`.
+* Verificación de que el middleware registre la información de la petición realizada.
+
+### Observaciones
+
+Las pruebas ejecutadas permitieron comprobar que los dos middlewares funcionan correctamente tanto para escenarios válidos como inválidos. Además, se verificó que la autenticación mediante API key y el registro de solicitudes cumplen con el comportamiento esperado.
