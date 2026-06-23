@@ -226,3 +226,7 @@ Un cambio incompatible sería eliminar el campo `periodoId` o cambiar el nombre 
 ## Observaciones finales
 
 La implementación de OpenAPI permitió documentar de forma clara y organizada el funcionamiento de la API. Además, las pruebas realizadas mediante Postman, Redocly, TypeScript y Jest permitieron comprobar que los endpoints funcionan correctamente y que la documentación generada coincide con el comportamiento real del sistema.
+
+## REFLEXION DEL DEBER DE DOCUMENTACION OpenAPI  REFINADO
+Si otro equipo comenzara a consumir esta API, sería importante mantener una documentación clara y actualizada para facilitar su integración donde el  uso de OpenAPI permite que los desarrolladores comprendan rápidamente los endpoints disponibles, los parámetros requeridos y las respuestas esperadas
+Además la implementación del versionado mediante las rutas /v1 y /v2 permite incorporar nuevas funcionalidades sin afectar a los clientes que utilizan versiones anteriores en si esto ayuda a mantener la compatibilidad del sistema y facilita la evolución de la API de forma ordenada y segura

@@ -24,10 +24,22 @@ paths:
         '401':
           description: API key ausente o inválida.
 
+  /v1:
+    get:
+      operationId: estadoV1
+      summary: Estado de la API v1
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: API v1 funcionando.
+        '401':
+          description: API key ausente o inválida.
+
   /v1/inscripciones:
     post:
       operationId: crearInscripcionV1
-      summary: Crear inscripción contrato v1
+      summary: Crear inscripción en v1
       security:
         - ApiKeyAuth: []
       requestBody:
@@ -43,16 +55,16 @@ paths:
               periodoId: "2026-1"
       responses:
         '201':
-          description: Inscripción creada.
+          description: Inscripción creada correctamente.
         '400':
-          description: Payload inválido.
+          description: Campos requeridos faltantes.
         '401':
           description: API key ausente o inválida.
 
   /v2/inscripciones:
     post:
       operationId: crearInscripcionV2
-      summary: Crear inscripción con método de pago contrato v2
+      summary: Crear inscripción en v2 con método de pago
       security:
         - ApiKeyAuth: []
       requestBody:
@@ -69,9 +81,9 @@ paths:
               payment_method: "scholarship"
       responses:
         '201':
-          description: Inscripción creada.
+          description: Inscripción creada correctamente.
         '400':
-          description: Payload inválido o payment_method fuera de enum.
+          description: Campos requeridos faltantes o payment_method inválido.
         '401':
           description: API key ausente o inválida.
 
