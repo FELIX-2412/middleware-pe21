@@ -230,3 +230,119 @@ La implementación de OpenAPI permitió documentar de forma clara y organizada e
 ## REFLEXION DEL DEBER DE DOCUMENTACION OpenAPI  REFINADO
 Si otro equipo comenzara a consumir esta API, sería importante mantener una documentación clara y actualizada para facilitar su integración donde el  uso de OpenAPI permite que los desarrolladores comprendan rápidamente los endpoints disponibles, los parámetros requeridos y las respuestas esperadas
 Además la implementación del versionado mediante las rutas /v1 y /v2 permite incorporar nuevas funcionalidades sin afectar a los clientes que utilizan versiones anteriores en si esto ayuda a mantener la compatibilidad del sistema y facilita la evolución de la API de forma ordenada y segura
+
+# Seguridad implementada (JWT y Rate Limiter)
+
+Como parte de esta práctica se incorporaron mecanismos adicionales de seguridad para proteger los endpoints de la API.
+
+## Middleware JWT
+
+Se desarrolló el middleware `requireJwt` encargado de validar los tokens JSON Web Token (JWT) antes de permitir el acceso a los servicios protegidos.
+
+El middleware realiza las siguientes validaciones:
+
+* Verifica que el token tenga el formato correcto.
+* Rechaza tokens cuyo algoritmo sea diferente de **HS256**.
+* Valida la firma utilizando **HMAC-SHA256**.
+* Compara la firma mediante `timingSafeEqual` para evitar ataques por tiempo de comparación.
+* Comprueba que el token no haya expirado mediante el claim `exp`.
+* Verifica la existencia del claim `sub`.
+* Almacena la información básica del usuario autenticado para continuar con la solicitud.
+
+---
+
+# Generación de Tokens JWT
+
+Se implementó el archivo `generate-token.mjs`, el cual permite generar tokens JWT válidos para realizar pruebas sobre la API.
+
+El token incluye los siguientes claims:
+
+* `sub`
+* `iss`
+* `aud`
+* `scope`
+* `exp`
+* `jti`
+
+El secreto utilizado para firmar el token se obtiene desde la variable de entorno `JWT_SECRET`, definida en el archivo `.env`.
+
+También se creó el archivo `.env.example` para mostrar la estructura necesaria de las variables de entorno sin exponer información sensible.
+
+---
+
+# Rate Limiter
+
+Se implementó un middleware denominado `rateLimiter` con el objetivo de limitar la cantidad de solicitudes que un cliente puede realizar.
+
+Configuración utilizada para el laboratorio:
+
+* Ventana de tiempo: **15 minutos**.
+* Máximo de solicitudes permitidas: **10**.
+
+Cuando el cliente supera el límite permitido, el servidor responde con el código HTTP **429 Too Many Requests**, indicando que debe esperar antes de realizar nuevas solicitudes.
+
+El pipeline de middlewares quedó configurado de la siguiente forma:
+
+```
+requestLogger
+        ↓
+requireJwt
+        ↓
+rateLimiter
+        ↓
+Rutas de la API
+```
+
+---
+
+# Pruebas realizadas en Postman
+
+Se realizaron las pruebas solicitadas para validar el funcionamiento del middleware JWT.
+
+## Prueba 1: Token válido
+
+Se envió una solicitud utilizando un JWT correctamente firmado.
+
+Resultado obtenido:
+
+* Código HTTP **201 Created**.
+
+---
+
+## Prueba 2: Firma inválida
+
+Se modificó la firma del JWT para simular un token alterado.
+
+Resultado obtenido:
+
+* Código HTTP **401 Unauthorized**.
+* Mensaje:
+
+```json
+{
+  "error": "Firma inválida"
+}
+```
+
+---
+
+## Prueba 3: Algoritmo no permitido
+
+Se envió un JWT utilizando el algoritmo `none`.
+
+Resultado obtenido:
+
+* Código HTTP **401 Unauthorized**.
+* Mensaje:
+
+```json
+{
+  "error": "Algoritmo no permitido"
+}
+```
+
+---
+
+## Resultado
+
+Las pruebas realizadas permitieron comprobar que el middleware JWT valida correctamente el algoritmo utilizado, la firma criptográfica y los principales claims del token antes de permitir el acceso a los endpoints protegidos. Además, el Rate Limiter controla el número máximo de solicitudes permitidas durante el intervalo configurado, agregando una capa adicional de seguridad para la API.
