@@ -1,8 +1,8 @@
 import { describe, test, expect, beforeEach, jest } from "@jest/globals";
-import { requireApiKey } from "./auth.js";
+import { requireJwt } from "./auth.js";
 import type { Request, Response, NextFunction } from "express";
 
-describe("requireApiKey", () => {
+describe("requireJwt", () => {
   let req: Partial<Request>;
   let res: Partial<Response>;
   let next: NextFunction;
@@ -18,31 +18,12 @@ describe("requireApiKey", () => {
     next = jest.fn() as NextFunction;
   });
 
-  test("retorna 401 si no existe x-api-key", () => {
-    requireApiKey(req as Request, res as Response, next);
+  test("retorna 401 si no existe Authorization", () => {
+    requireJwt(req as Request, res as Response, next);
 
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
-      error: "API key inválida o ausente",
+      error: "Token no existe",
     });
-  });
-
-  test("retorna 401 si la API key es incorrecta", () => {
-    req.headers = { "x-api-key": "incorrecta" };
-
-    requireApiKey(req as Request, res as Response, next);
-
-    expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({
-      error: "API key inválida o ausente",
-    });
-  });
-
-  test("llama next si la API key es válida", () => {
-    req.headers = { "x-api-key": "secreto-demo" };
-
-    requireApiKey(req as Request, res as Response, next);
-
-    expect(next).toHaveBeenCalled();
   });
 });
